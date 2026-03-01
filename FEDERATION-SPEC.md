@@ -377,3 +377,71 @@ This feeds directly into a future dashboard UI — every commit, blocker, and re
 - [ ] Agent wrapper that auto-posts events on commit/blocker/complete
 - [ ] GitHub skill integration for branch management
 - [ ] Shared `jarvis-collab` repo created with both instances as contributors
+
+---
+
+## Corey's Jarvis Additions (v1.1 proposal)
+
+### A) Contract-First Federation Envelope
+Standardise every federation request/response with a strict envelope:
+
+```json
+{
+  "protocol_version": "1.1",
+  "task_id": "fed-xxx",
+  "from_instance": "corey-jarvis",
+  "to_instance": "sonny-jarvis",
+  "intent": "negotiate|execute|result|progress|heartbeat",
+  "requires_ack": true,
+  "sent_at": "2026-03-01T18:00:00Z",
+  "payload": {}
+}
+```
+
+Why: avoids ambiguity across `/relay/task`, `/federation/*`, and ad-hoc chat payloads.
+
+### B) Minimum Result Schema for Remote Subtasks
+Remote subtask completions should always return:
+
+```json
+{
+  "task_id": "fed-001",
+  "subtask_id": "research-1",
+  "status": "complete|failed|partial",
+  "summary": "...",
+  "artifacts": ["url-or-path"],
+  "confidence": "low|med|high",
+  "blockers": [],
+  "next_action": "..."
+}
+```
+
+Why: initiator-side synthesis becomes deterministic and machine-mergeable.
+
+### C) Failure Policy / Timeouts
+Add explicit federated timeout + fallback behavior:
+- negotiation timeout: 15s default
+- execution heartbeat: every 30s for long tasks
+- hard timeout: task-defined (e.g., 300s)
+- if peer times out: initiator marks remote subtask `degraded`, reassigns local, and logs event
+
+### D) Idempotency and Replay Safety
+Require `idempotency_key` per federation write endpoint (`/negotiate`, `/result`, `/progress`).
+Duplicate keys must return the original accepted result.
+
+Why: safe retries across unstable ngrok/session conditions.
+
+### E) Security Hardening (near-term)
+- Rotate API keys if posted in shared/public channels
+- Store peer secrets only in env/secret store (never in git files)
+- Include `nonce` + timestamp drift check (<=60s) for signed calls (phase 2)
+
+### F) Capability Diff Endpoint
+Add `GET /federation/capabilities/diff?since=<timestamp>`
+so each side can sync capability changes without re-fetching full state.
+
+### G) Shared Work Taxonomy for Parallel Dev
+Canonical subtask types:
+- `research`, `scoring`, `redteam`, `experiment_design`, `implementation`, `test`, `review`, `synthesis`
+
+Each negotiated task should map subtasks to this taxonomy for cleaner routing and metrics.
