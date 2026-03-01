@@ -4,7 +4,7 @@ Use this file as the canonical bootstrap input for Phase 1 capability exchange.
 
 ## Corey peer (required)
 
-- `corey_api_url`: `<SET_ME_PUBLIC_URL>`
+- `corey_api_url`: `http://100.81.163.32:8000`
 - `corey_federation_api_key`: `<SET_ME_API_KEY>`
 - `corey_hmac_secret`: `<SET_ME_SHARED_SECRET>`
 - `corey_instance_id`: `corey-jarvis`
