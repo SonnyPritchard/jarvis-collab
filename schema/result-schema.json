@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "JarvisResult",
+  "type": "object",
+  "required": ["task_id", "status", "summary"],
+  "properties": {
+    "task_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["ok", "error", "partial", "blocked"] },
+    "summary": { "type": "string" },
+    "artifacts": { "type": "array" },
+    "blockers": { "type": "array" },
+    "next_action": { "type": "string" }
+  }
+}

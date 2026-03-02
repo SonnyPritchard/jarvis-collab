@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "JarvisTask",
+  "type": "object",
+  "required": ["task_id", "from", "type", "desc"],
+  "properties": {
+    "task_id": { "type": "string" },
+    "from": { "type": "string", "enum": ["sonny-jarvis", "corey-jarvis"] },
+    "type": { "type": "string", "enum": ["skill", "agent", "review", "research", "fix"] },
+    "desc": { "type": "string" },
+    "context": { "type": "object" },
+    "idempotency_key": { "type": "string" }
+  }
+}
